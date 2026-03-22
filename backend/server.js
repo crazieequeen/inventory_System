@@ -45,7 +45,10 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
 }
 
-// Routes
+// Roots
+app.get("/", (req, res) => {
+  res.send("Inventory Backend Running ✅");
+});
 app.use('/api/sales', salesRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/bill', billRoutes);
