@@ -1,39 +1,44 @@
 const salesData = require('../models/salesDataDB');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
- * Helper to query Gemini AI
+ * Helper to query Grok (or Groq) API compatible endpoints
  */
-async function queryGeminiAPI(promptText) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY missing. Please add it to your backend .env file.');
+async function queryGrokAPI(promptText) {
+  const apiKey = process.env.GROK_API_KEY || process.env.GROQ_API_KEY || 'your_api_key_here';
+  const isGroq = !!process.env.GROQ_API_KEY;
+  const endpoint = isGroq ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.x.ai/v1/chat/completions';
+  const model = isGroq ? 'llama-3.3-70b-versatile' : 'grok-beta';
+
+  if (apiKey === 'your_api_key_here') {
+    throw new Error('API Key missing. Please add GROK_API_KEY to your backend .env file.');
   }
 
-  const modelNames = ['gemini-1.5-flash', 'gemini-pro'];
-  let lastError = null;
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      messages: [
+        { role: 'system', content: 'You are an inventory data science AI. Return strictly parsable JSON object.' },
+        { role: 'user', content: promptText }
+      ],
+      model: model,
+      temperature: 0.1,
+      response_format: { type: 'json_object' }
+    })
+  });
 
-  for (const modelName of modelNames) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(promptText);
-      const response = await result.response;
-      const text = response.text();
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message || 'API request failed');
 
-      // Extract JSON
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('No JSON object found in response');
-
-      return JSON.parse(jsonMatch[0]);
-    } catch (error) {
-      console.warn(`⚠️ Gemini ${modelName} failed for prediction:`, error.message);
-      lastError = error;
-    }
+  try {
+    const rawContent = data.choices[0].message.content.trim();
+    return JSON.parse(rawContent);
+  } catch (error) {
+    throw new Error('AI returned non-JSON response');
   }
-  throw lastError || new Error('All Gemini models failed for prediction');
 }
 
 /**
@@ -48,19 +53,11 @@ const getForecast = async (req, res) => {
     if (historicalSales.length === 0) return res.status(404).json({ error: 'No sales data found' });
 
     const prompt = `
-Given the following 7-day historical sales data:
-${JSON.stringify(historicalSales)}
-
+Given the historical sales data: ${JSON.stringify(historicalSales)}
 Provide a sales forecast for the next ${days} days.
-Return ONLY valid JSON:
-{
-  "averageDailySales": number,
-  "forecasts": [
-    { "date": "YYYY-MM-DD", "predictedQuantity": number }
-  ]
-}`;
+Return ONLY valid JSON: { "averageDailySales": number, "forecasts": [{ "date": "YYYY-MM-DD", "predictedQuantity": number }] }`;
 
-    const aiResult = await queryGeminiAPI(prompt);
+    const aiResult = await queryGrokAPI(prompt);
 
     res.json({
       success: true,
@@ -71,7 +68,7 @@ Return ONLY valid JSON:
       }
     });
   } catch (error) {
-    console.error('Error generating forecast:', error);
+    console.error('Error in Groq forecast:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -87,29 +84,17 @@ const predictStockout = async (req, res) => {
     let stock = currentStock;
     if (stock === undefined) {
       const stockData = await salesData.getProductStock(productId);
-      if (!stockData) return res.status(404).json({ error: 'Product not found' });
-      stock = stockData.currentStock;
+      stock = stockData ? stockData.currentStock : 0;
     }
 
     const historicalSales = await salesData.getSalesByProduct(productId);
-    if (historicalSales.length === 0) {
-      return res.json({ success: true, data: { status: 'no_sales_data' } });
-    }
-
     const prompt = `
-Inventory evaluation for Product ${productId} with current stock: ${stock}.
-Sales history: ${JSON.stringify(historicalSales)}
+Inventory evaluate Product ${productId} (Stock: ${stock}).
+Sales: ${JSON.stringify(historicalSales)}
+Output strictly JSON: { "averageDailySales": number, "daysUntilStockout": number }`;
 
-Analyze these sales against the current stock.
-Output STRICT JSON only:
-{
-  "averageDailySales": number,
-  "daysUntilStockout": number
-}`;
-
-    const aiResult = await queryGeminiAPI(prompt);
+    const aiResult = await queryGrokAPI(prompt);
     const daysUntilStockout = aiResult.daysUntilStockout || 0;
-
     const stockoutDate = new Date();
     stockoutDate.setDate(stockoutDate.getDate() + daysUntilStockout);
 
@@ -125,24 +110,15 @@ Output STRICT JSON only:
       }
     });
   } catch (error) {
-    console.error('Error predicting stockout:', error);
     res.status(500).json({ error: error.message });
   }
 };
 
 /**
- * Get predictions for all products
+ * Placeholder for all products
  */
 const getAllProductsPredictions = async (req, res) => {
-  try {
-    const aggregatedSales = salesData.getAggregatedSales();
-    const predictions = [];
-    // Just a placeholder/simplified version of the previous heavy loop for now
-    // In real app, you'd batch this or use job workers
-    res.json({ success: true, message: 'Predictions engine is ready using Gemini', count: aggregatedSales.length });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  res.json({ success: true, message: 'Groq engine is active for predictions' });
 };
 
 module.exports = {
