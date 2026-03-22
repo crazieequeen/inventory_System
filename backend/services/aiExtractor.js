@@ -1,80 +1,83 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Initialize Gemini AI (Optional)
-const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
  * Extract structured data from bill text using AI
  */
 const extractDataWithAI = async (extractedText) => {
-  // 1. Try Groq first as it's the primary provider for this app
-  const groqKey = process.env.GROK_API_KEY || process.env.GROQ_API_KEY;
-  if (groqKey && groqKey !== 'your_api_key_here') {
+  // Try different model names in order
+  const modelNames = [
+    'gemini-1.5-flash',
+    'gemini-pro'
+  ];
+
+  let lastError = null;
+
+  for (const modelName of modelNames) {
     try {
-      console.log('🤖 Extracting with Groq AI...');
+      console.log(`🤖 Extraction using Gemini model: ${modelName}...`);
+
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('GEMINI_API_KEY missing in environment variables');
+      }
+
+      const model = genAI.getGenerativeModel({ model: modelName });
+
       const prompt = `
-Extract product data from this bill text. Return ONLY valid JSON in this exact structure:
+You are a data extraction assistant. Extract product information from the following purchase bill/invoice text.
+
+CRITICAL RULES:
+1. Extract product names, their quantities, AND their unit prices.
+2. Product names are DESCRIPTIVE TEXT (e.g., "Fresh Milk 1L", "White Bread", "Eggs Dozen", "Apple (2 lbs)")
+3. DO NOT extract dates or invoice numbers as product names.
+4. Quantities are WHOLE NUMBERS representing units purchased.
+5. Prices should be NUMBER format (e.g. 1.00) without currency symbols. Provide the UNIT PRICE or TOTAL PRICE for that row.
+6. Return STRICTLY valid JSON format with NO additional text.
+
+REQUIRED JSON FORMAT:
 {
   "items": [
-    { "name": "string", "quantity": number, "price": number }
+    {
+      "name": "Product Name Here",
+      "quantity": 1,
+      "price": 1.00
+    }
   ]
 }
 
-BILL TEXT:
-${extractedText}`;
+BILL TEXT TO EXTRACT FROM:
+${extractedText}
 
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqKey}`
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: 'system', content: 'You are an inventory extraction assistant. Output STRICT JSON only.' },
-            { role: 'user', content: prompt }
-          ],
-          model: 'llama-3.3-70b-versatile',
-          temperature: 0.1,
-          response_format: { type: 'json_object' }
-        })
-      });
+Return ONLY the JSON object, nothing else.
+`;
 
-      const data = await response.json();
-      if (data.choices && data.choices[0].message.content) {
-        const raw = data.choices[0].message.content.trim();
-        const parsed = JSON.parse(raw);
-        if (parsed.items && Array.isArray(parsed.items)) {
-          console.log(`✅ Groq extraction successful: ${parsed.items.length} items`);
-          return parsed;
-        }
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Extract JSON from response
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('No JSON found in AI response');
+
+      const data = JSON.parse(jsonMatch[0]);
+
+      if (!data.items || !Array.isArray(data.items)) {
+        throw new Error('Invalid JSON structure from Gemini');
       }
-    } catch (e) {
-      console.error('⚠️ Groq extraction failed:', e.message);
+
+      console.log(`✅ Gemini extracted ${data.items.length} items`);
+      return data;
+
+    } catch (error) {
+      console.warn(`⚠️ Gemini ${modelName} failed:`, error.message);
+      lastError = error;
+      continue;
     }
   }
 
-  // 2. Try Gemini if configured
-  if (genAI) {
-    const modelNames = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-    for (const modelName of modelNames) {
-      try {
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const prompt = `Extract product data from this bill text. Return JSON: { "items": [{ "name": "string", "quantity": number, "price": number }] } \n\n TEXT: ${extractedText}`;
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed.items) return parsed;
-        }
-      } catch (e) {
-        console.error(`⚠️ Gemini ${modelName} failed:`, e.message);
-      }
-    }
-  }
-
-  // 3. Fallback: Manual extraction if all AI fails
+  // Final fallback
   return attemptManualExtraction(extractedText);
 };
 
@@ -88,30 +91,15 @@ const attemptManualExtraction = (text) => {
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-
-    // Skip header/footer lines
-    if (/^(store|receipt|cashier|date|time|subtotal|tax|total|thank|phone|street|city)/i.test(trimmedLine)) {
-      continue;
-    }
-
-    // Pattern 1: "Apple (2 lbs)    1 x $1.00"
+    // Simple regex patterns as before
     let match = trimmedLine.match(/^([a-zA-Z\s()0-9\-]+?)\s+(\d+)\s*[×xX]\s*\$?\s*([0-9.]+)/);
     if (match) {
       items.push({ name: match[1].trim(), quantity: parseInt(match[2]), price: parseFloat(match[3]) });
       continue;
     }
-
-    // Pattern 2: "Milk (1 gallon)    $3.50"
     match = trimmedLine.match(/^([a-zA-Z\s()0-9\-]+?)\s+\$?\s*([0-9.]+)$/);
     if (match) {
       items.push({ name: match[1].trim(), quantity: 1, price: parseFloat(match[2]) });
-      continue;
-    }
-
-    // Simple fallback for quantity only
-    match = trimmedLine.match(/^([a-zA-Z\s()]+?)\s{2,}(\d+)\s*$/);
-    if (match) {
-      items.push({ name: match[1].trim(), quantity: parseInt(match[2]), price: 0 });
     }
   }
 
