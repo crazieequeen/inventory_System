@@ -27,7 +27,7 @@ function UploadBill() {
         const formData = new FormData();
         formData.append('bill', file);
 
-        const response = await fetch('http://localhost:5000/api/bill/upload', {
+        const response = await fetch('https://inventory-system-mpp8.onrender.com/api/bill/upload', {
           method: 'POST',
           body: formData
         });
@@ -108,7 +108,7 @@ function UploadBill() {
       console.log('🟢 Confirming stock update:', items);
 
       // Confirm stock update with backend
-      const response = await fetch('http://localhost:5000/api/bill/confirm', {
+      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/bill/confirm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

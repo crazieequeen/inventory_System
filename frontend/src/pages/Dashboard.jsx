@@ -19,9 +19,9 @@ function Dashboard() {
     try {
       setLoading(true);
       const [salesRes, purchasesRes, stockRes] = await Promise.all([
-        fetch('http://localhost:5000/api/sales/history'),
-        fetch('http://localhost:5000/api/sales/purchases'),
-        fetch('http://localhost:5000/api/sales/stock')
+        fetch('https://inventory-system-mpp8.onrender.com/api/sales/history'),
+        fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases'),
+        fetch('https://inventory-system-mpp8.onrender.com/api/sales/stock')
       ]);
 
       const salesData = await salesRes.json();

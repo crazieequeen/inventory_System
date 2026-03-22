@@ -35,7 +35,7 @@ function Header() {
 
       try {
         // Fetch sales data for the last 7 days
-        const salesResponse = await fetch('http://localhost:5000/api/sales/aggregated?days=7');
+        const salesResponse = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/aggregated?days=7');
         const salesData = await salesResponse.json();
 
         const salesMap = {};
@@ -46,7 +46,7 @@ function Header() {
         }
 
         // Fetch recent purchases
-        const purchasesResponse = await fetch('http://localhost:5000/api/sales/purchases');
+        const purchasesResponse = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases');
         const purchasesData = await purchasesResponse.json();
 
         // Check each product for alerts

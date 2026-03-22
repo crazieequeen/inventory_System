@@ -13,7 +13,7 @@ function Purchases() {
 
   const fetchPurchases = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/sales/purchases');
+      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases');
       const data = await response.json();
       
       if (data.success) {
