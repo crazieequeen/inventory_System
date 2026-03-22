@@ -1,26 +1,12 @@
 {
-  "name": "inventory-intelligence-system",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "render-build": "npm install && cd backend && npm install && cd .. && npm run build"
-  },
-  "dependencies": {
-    "firebase": "^12.10.0",
-    "lucide-react": "^0.294.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "recharts": "^2.10.0",
-    "tesseract.js": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^7.3.1"
-  }
+    "name": "inventory-intelligence-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev:backend": "cd backend && npm run dev",
+        "dev:frontend": "cd frontend && npm run dev",
+        "build:frontend": "cd frontend && npm run build",
+        "render-build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+        "start": "cd backend && node server.js"
+    }
 }

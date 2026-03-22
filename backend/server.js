@@ -41,9 +41,6 @@ app.use(morgan('dev'));
 
 // Static files for production
 const path = require('path');
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../dist')));
-}
 
 // Roots
 app.get("/", (req, res) => {
@@ -73,16 +70,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Catch-all for React router (Production only)
+// Catch-all for React router
+app.use(express.static(path.join(__dirname,'dist')));
+
 app.get('*', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
-  } else {
-    res.status(404).json({
-      error: 'Not Found',
-      message: 'Route not handled. In production, this would serve your React app.'
-    });
-  }
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start server

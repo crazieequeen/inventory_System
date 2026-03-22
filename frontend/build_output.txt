@@ -1,0 +1,13 @@
+
+> inventory-intelligence-system@1.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+file:///C:/Users/RUBIN%20RAJ/OneDrive/stock%20detection/frontend/node_modules/vite/dist/node/chunks/config.js:23919
+										if (!resolved) return Promise.reject(/* @__PURE__ */ new Error(`Failed to resolve ${url$3} from ${id}`));
+										                                                     ^
+
+Error: Failed to resolve /Inventory_System/assets/index-BLquK9gJ.js from C:/Users/RUBIN RAJ/OneDrive/stock detection/frontend/index.html
+    at file:///C:/Users/RUBIN%20RAJ/OneDrive/stock%20detection/frontend/node_modules/vite/dist/node/chunks/config.js:23919:64
+
+Node.js v22.14.0
