@@ -42,10 +42,7 @@ app.use(morgan('dev'));
 // Static files for production
 const path = require('path');
 
-// Roots
-app.get("/", (req, res) => {
-  res.send("Inventory Backend Running ✅");
-});
+// API Routes
 app.use('/api/sales', salesRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/bill', billRoutes);
