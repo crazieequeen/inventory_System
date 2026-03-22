@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { API_BASE_URL as CONFIG_API_URL } from '../config';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = CONFIG_API_URL + '/api';
 
 /**
  * Custom hook for making API calls to the backend
@@ -132,7 +133,7 @@ export const useAPI = () => {
     if (currentStock !== null) {
       body.currentStock = currentStock;
     }
-    
+
     return apiCall('/predictions/stockout', {
       method: 'POST',
       body: JSON.stringify(body)
@@ -156,27 +157,27 @@ export const useAPI = () => {
   return {
     // Generic API call
     apiCall,
-    
+
     // Sales methods
     addSalesEntry,
     getSalesHistory,
     getSalesByProduct,
     getAggregatedSales,
-    
+
     // Stock methods
     getStockLevels,
     getProductStock,
     addPurchase,
     getPurchaseHistory,
-    
+
     // Prediction methods
     getForecast,
     predictStockout,
     getAllPredictions,
-    
+
     // Health check
     checkHealth,
-    
+
     // State
     loading,
     error
