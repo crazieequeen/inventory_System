@@ -14,11 +14,6 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("Backend working");
-});
-
 // Connect to MongoDB (no auto-initialization)
 connectDB();
 
@@ -63,10 +58,10 @@ app.use((err, req, res, next) => {
 });
 
 // Catch-all for React router
-app.use(express.static(path.join(__dirname,'dist')));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
 // Start server

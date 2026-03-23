@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_BASE_URL as CONFIG_API_URL } from '../config';
+import { API_URL as CONFIG_API_URL } from '../config';
 
 const API_BASE_URL = CONFIG_API_URL + '/api';
 
