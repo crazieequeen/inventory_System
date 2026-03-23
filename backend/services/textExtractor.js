@@ -32,12 +32,13 @@ const extractFromImage = async (buffer) => {
  * Main extraction function - only supports images
  */
 const extractText = async (file) => {
-  const { buffer, mimetype } = file;
+  const { buffer, path, mimetype } = file;
+  const source = path || buffer;
   
   console.log(`📋 File type: ${mimetype}`);
   
-  if (mimetype.startsWith('image/')) {
-    return await extractFromImage(buffer);
+  if (mimetype && mimetype.startsWith('image/')) {
+    return await extractFromImage(source);
   } else {
     throw new Error('Only image files (JPG, PNG) are supported. Please upload a photo of your bill.');
   }
