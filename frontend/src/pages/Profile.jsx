@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Building, Camera, Save } from 'lucide-react';
+import { API_URL } from '../config';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -36,7 +37,7 @@ function Profile() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/auth/update-profile', {
+      const response = await fetch(`${API_URL}/api/auth/update-profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

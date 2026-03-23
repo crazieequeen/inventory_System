@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Phone, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { API_URL } from '../config';
 
 function ForgetPassword() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function ForgetPassword() {
     setError('');
 
     try {
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/auth/forget-password', {
+      const response = await fetch(`${API_URL}/api/auth/forget-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
@@ -62,7 +63,7 @@ function ForgetPassword() {
     }
 
     try {
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/auth/reset-password', {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, otp, newPassword })

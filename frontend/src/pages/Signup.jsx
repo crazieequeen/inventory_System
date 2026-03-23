@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User, ShoppingBag, Building, Phone } from 'lucide-react';
+import { API_URL } from '../config';
 
 function Signup() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/auth/signup', {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -81,7 +82,7 @@ function Signup() {
     setError('');
 
     try {
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/auth/verify-signup', {
+      const response = await fetch(`${API_URL}/api/auth/verify-signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, otp })

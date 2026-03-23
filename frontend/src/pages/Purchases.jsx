@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Package, FileText } from 'lucide-react';
+import { API_URL } from '../config';
 
 function Purchases() {
   const [purchases, setPurchases] = useState([]);
@@ -13,7 +14,7 @@ function Purchases() {
 
   const fetchPurchases = async () => {
     try {
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases');
+      const response = await fetch(`${API_URL}/api/sales/purchases`);
       const data = await response.json();
       
       if (data.success) {

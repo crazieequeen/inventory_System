@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Calendar, CheckCircle, Package, X } from 'lucide-react';
+import { API_URL } from '../config';
 import { useAPI } from '../hooks/useAPI';
 import { useStock } from '../context/StockContext';
 
@@ -27,7 +28,7 @@ function UploadBill() {
         const formData = new FormData();
         formData.append('bill', file);
 
-        const response = await fetch('https://inventory-system-mpp8.onrender.com/api/bill/upload', {
+        const response = await fetch(`${API_URL}/api/bill/upload`, {
           method: 'POST',
           body: formData
         });
@@ -108,7 +109,7 @@ function UploadBill() {
       console.log('🟢 Confirming stock update:', items);
 
       // Confirm stock update with backend
-      const response = await fetch('https://inventory-system-mpp8.onrender.com/api/bill/confirm', {
+      const response = await fetch(`${API_URL}/api/bill/confirm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

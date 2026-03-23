@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, ChevronDown, AlertTriangle, TrendingUp, Package, ShoppingCart, X } from 'lucide-react';
+import { API_URL } from '../config';
 import { useStock } from '../context/StockContext';
 
 function Header() {
@@ -35,7 +36,7 @@ function Header() {
 
       try {
         // Fetch sales data for the last 7 days
-        const salesResponse = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/aggregated?days=7');
+        const salesResponse = await fetch(`${API_URL}/api/sales/aggregated?days=7`);
         const salesData = await salesResponse.json();
 
         const salesMap = {};
@@ -46,7 +47,7 @@ function Header() {
         }
 
         // Fetch recent purchases
-        const purchasesResponse = await fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases');
+        const purchasesResponse = await fetch(`${API_URL}/api/sales/purchases`);
         const purchasesData = await purchasesResponse.json();
 
         // Check each product for alerts
