@@ -14,6 +14,11 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Test route
+app.get("/", (req, res) => {
+  res.send("Backend working");
+});
+
 // Connect to MongoDB (no auto-initialization)
 connectDB();
 
