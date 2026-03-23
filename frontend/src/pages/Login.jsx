@@ -94,6 +94,7 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                autocomplete="current-password"
               />
               <button
                 type="button"

@@ -194,6 +194,7 @@ function Signup() {
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  autocomplete="new-password"
                 />
                 <button
                   type="button"
@@ -216,6 +217,7 @@ function Signup() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
+                  autocomplete="new-password"
                 />
                 <button
                   type="button"
