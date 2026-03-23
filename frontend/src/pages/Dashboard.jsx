@@ -5,6 +5,8 @@ import {
   ResponsiveContainer, BarChart, Bar, Legend, PieChart, Pie, Cell
 } from 'recharts';
 
+import { API_URL } from '../config';
+
 function Dashboard() {
   const [sales, setSales] = useState([]);
   const [purchases, setPurchases] = useState([]);
@@ -19,9 +21,9 @@ function Dashboard() {
     try {
       setLoading(true);
       const [salesRes, purchasesRes, stockRes] = await Promise.all([
-        fetch('https://inventory-system-mpp8.onrender.com/api/sales/history'),
-        fetch('https://inventory-system-mpp8.onrender.com/api/sales/purchases'),
-        fetch('https://inventory-system-mpp8.onrender.com/api/sales/stock')
+        fetch(`${API_URL}/api/sales/history`),
+        fetch(`${API_URL}/api/sales/purchases`),
+        fetch(`${API_URL}/api/sales/stock`)
       ]);
 
       const salesData = await salesRes.json();
