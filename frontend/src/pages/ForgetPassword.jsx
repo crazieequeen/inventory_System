@@ -163,7 +163,7 @@ function ForgetPassword() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  autocomplete="new-password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -185,7 +185,7 @@ function ForgetPassword() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  autocomplete="new-password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"

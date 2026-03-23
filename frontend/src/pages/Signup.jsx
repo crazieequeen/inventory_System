@@ -179,6 +179,7 @@ function Signup() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
+                  autoComplete="tel"
                 />
               </div>
             </div>
@@ -194,7 +195,7 @@ function Signup() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  autocomplete="new-password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -217,7 +218,7 @@ function Signup() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  autocomplete="new-password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"

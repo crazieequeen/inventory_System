@@ -79,6 +79,7 @@ function Login() {
                 value={formData.phone}
                 onChange={handleChange}
                 required
+                autoComplete="username"
               />
             </div>
           </div>
@@ -94,7 +95,7 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                autocomplete="current-password"
+                autoComplete="current-password"
               />
               <button
                 type="button"
