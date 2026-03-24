@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Bell, ChevronDown, AlertTriangle, TrendingUp, Package, ShoppingCart, X } from 'lucide-react';
 import { API_URL } from '../config';
 import { useStock } from '../context/StockContext';
@@ -244,7 +245,7 @@ function Header() {
 
           {showProfileMenu && (
             <div className="profile-menu">
-              <a href="/profile" className="menu-item">Profile</a>
+              <Link to="/profile" className="menu-item">Profile</Link>
               <a
                 href="#logout"
                 className="menu-item"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User, ShoppingBag, Building, Phone } from 'lucide-react';
 import { API_URL } from '../config';
 
@@ -273,7 +273,7 @@ function Signup() {
         )}
 
         <div className="auth-footer">
-          <p>Already have an account? <a href="/login">Sign in</a></p>
+          <p>Already have an account? <Link to="/login">Sign in</Link></p>
         </div>
       </div>
 

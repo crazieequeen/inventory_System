@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Phone, ShoppingBag } from 'lucide-react';
 import { API_URL } from '../config';
 
@@ -113,8 +113,8 @@ function Login() {
         </form>
 
         <div className="auth-footer">
-          <p>Don't have an account? <a href="/signup">Sign up</a></p>
-          <p><a href="/forget-password">Forgot Password?</a></p>
+          <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+          <p><Link to="/forget-password">Forgot Password?</Link></p>
         </div>
       </div>
 

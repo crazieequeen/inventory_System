@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Phone, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { API_URL } from '../config';
 
@@ -213,7 +213,7 @@ function ForgetPassword() {
         )}
 
         <div className="auth-footer">
-          <p>Remember your password? <a href="/login">Sign in</a></p>
+          <p>Remember your password? <Link to="/login">Sign in</Link></p>
         </div>
       </div>
 
